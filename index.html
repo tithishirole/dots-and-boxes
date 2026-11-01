@@ -32,7 +32,7 @@
     <main class="max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col items-center justify-center w-full">
 
         <!-- HEADER -->
-        <header class="w-full flex items-center justify-between mb-8">
+        <header class="w-full max-w-2xl flex items-center justify-between mb-6">
             <h1 class="text-2xl font-bold tracking-tight">Dots & Boxes</h1>
             <div id="game-controls" class="hidden flex items-center gap-3">
                 <button onclick="restartGame()" class="px-4 py-2 text-sm font-medium rounded-lg border border-slate-600 hover:bg-slate-700/50 transition-colors">Restart</button>
@@ -85,7 +85,7 @@
                 <ul class="list-disc list-inside space-y-1 text-slate-300 text-xs leading-relaxed">
                     <li>Players take turns clicking lines to connect adjacent dots.</li>
                     <li>Completing the 4th side of a box claims that box for you.</li>
-                    <li>Completing a box earns you a point and grants you an **extra turn**.</li>
+                    <li>Completing a box earns you a point and grants you an <strong>extra turn</strong>.</li>
                     <li>The player with the most claimed boxes at the end wins!</li>
                 </ul>
             </div>
@@ -100,7 +100,7 @@
         <div id="game-screen" class="hidden w-full flex flex-col items-center">
             
             <!-- Scoreboards -->
-            <div class="grid grid-cols-2 gap-6 w-full max-w-md mb-8">
+            <div class="grid grid-cols-2 gap-6 w-full max-w-lg mb-6">
                 <div id="p1-card" class="p-4 rounded-xl border-2 border-blue-500 bg-slate-800/80 shadow-md flex flex-col items-center transition-all">
                     <span id="p1-label" class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-1">Player 1</span>
                     <span id="p1-score" class="text-3xl font-bold mb-1">0</span>
@@ -114,7 +114,7 @@
             </div>
 
             <!-- Board Container -->
-            <div id="board-wrapper" class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/60 shadow-xl overflow-x-auto max-w-full flex justify-center">
+            <div id="board-wrapper" class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700/60 shadow-xl overflow-x-auto max-w-full flex justify-center">
                 <div id="board" class="relative"></div>
             </div>
         </div>
@@ -135,15 +135,14 @@
 
     <!-- JAVASCRIPT GAME LOGIC -->
     <script>
-        let n = 4; // grid size (dots per row/col)
+        let n = 4;
         let p1Name = "Player 1";
         let p2Name = "Player 2";
         let scores = [0, 0];
-        let turn = 0; // 0 for Player 1, 1 for Player 2
+        let turn = 0;
         let hLines = [];
         let vLines = [];
         let boxes = [];
-        let soundEnabled = true;
 
         function toggleDarkMode() {
             const isDark = document.getElementById('dark-mode-toggle').checked;
@@ -207,9 +206,9 @@
             const board = document.getElementById('board');
             board.innerHTML = '';
 
-            const dotSize = 10;
-            const cellSize = 64;
-            const lineThickness = 10;
+            const dotSize = 12;
+            const cellSize = 88; // Increased for a larger laptop friendly grid
+            const lineThickness = 12;
 
             board.style.width = `${(n - 1) * cellSize + dotSize}px`;
             board.style.height = `${(n - 1) * cellSize + dotSize}px`;
@@ -218,9 +217,9 @@
             for (let r = 0; r < n - 1; r++) {
                 for (let c = 0; c < n - 1; c++) {
                     const boxDiv = document.createElement('div');
-                    boxDiv.className = 'absolute transition-colors duration-200';
-                    boxDiv.style.left = `${c * cellSize + dotSize}px`;
-                    boxDiv.style.top = `${r * cellSize + dotSize}px`;
+                    boxDiv.className = 'absolute transition-colors duration-200 rounded-lg';
+                    boxDiv.style.left = `${c * cellSize + dotSize / 2}px`;
+                    boxDiv.style.top = `${r * cellSize + dotSize / 2}px`;
                     boxDiv.style.width = `${cellSize - dotSize}px`;
                     boxDiv.style.height = `${cellSize - dotSize}px`;
 
@@ -237,14 +236,9 @@
             for (let r = 0; r < n; r++) {
                 for (let c = 0; c < n - 1; c++) {
                     const line = document.createElement('div');
-                    line.className = 'absolute cursor-pointer rounded transition-colors';
+                    line.className = 'absolute cursor-pointer rounded-full transition-colors';
                     line.style.left = `${c * cellSize + dotSize}px`;
-                    line.style.top = `${r * cellSize - lineThickness / 2 + (r === 0 ? dotSize/2 : r === n-1 ? -dotSize/2 : 0)}px`;
-                    
-                    // Adjust spacing accurately
-                    const topPos = r * cellSize + (r === 0 ? 0 : r === n ? dotSize : 0);
                     line.style.top = `${r * cellSize}px`;
-                    line.style.left = `${c * cellSize + dotSize}px`;
                     line.style.width = `${cellSize - dotSize}px`;
                     line.style.height = `${lineThickness}px`;
                     line.style.transform = `translateY(-50%)`;
@@ -254,7 +248,7 @@
                     } else if (hLines[r][c] === 2) {
                         line.classList.add('bg-rose-500', 'cursor-default');
                     } else {
-                        line.classList.add('bg-slate-600/40', 'hover:bg-indigo-400');
+                        line.classList.add('bg-slate-700/50', 'hover:bg-indigo-400');
                         line.onclick = () => makeMove('h', r, c);
                     }
                     board.appendChild(line);
@@ -265,7 +259,7 @@
             for (let r = 0; r < n - 1; r++) {
                 for (let c = 0; c < n; c++) {
                     const line = document.createElement('div');
-                    line.className = 'absolute cursor-pointer rounded transition-colors';
+                    line.className = 'absolute cursor-pointer rounded-full transition-colors';
                     line.style.left = `${c * cellSize}px`;
                     line.style.top = `${r * cellSize + dotSize}px`;
                     line.style.width = `${lineThickness}px`;
@@ -277,7 +271,7 @@
                     } else if (vLines[r][c] === 2) {
                         line.classList.add('bg-rose-500', 'cursor-default');
                     } else {
-                        line.classList.add('bg-slate-600/40', 'hover:bg-indigo-400');
+                        line.classList.add('bg-slate-700/50', 'hover:bg-indigo-400');
                         line.onclick = () => makeMove('v', r, c);
                     }
                     board.appendChild(line);
@@ -288,9 +282,9 @@
             for (let r = 0; r < n; r++) {
                 for (let c = 0; c < n; c++) {
                     const dot = document.createElement('div');
-                    dot.className = 'absolute w-2.5 h-2.5 bg-slate-200 rounded-full shadow-sm';
-                    dot.style.left = `${c * cellSize + dotSize / 2}px`;
-                    dot.style.top = `${r * cellSize + dotSize / 2}px`;
+                    dot.className = 'absolute w-3 h-3 bg-slate-200 rounded-full shadow-sm';
+                    dot.style.left = `${c * cellSize}px`;
+                    dot.style.top = `${r * cellSize}px`;
                     dot.style.transform = 'translate(-50%, -50%)';
                     board.appendChild(dot);
                 }
@@ -308,7 +302,6 @@
 
             playSound();
 
-            // Check box completions
             let scoredBox = checkBoxes();
 
             if (!scoredBox) {
@@ -325,7 +318,6 @@
             for (let r = 0; r < n - 1; r++) {
                 for (let c = 0; c < n - 1; c++) {
                     if (boxes[r][c] === -1) {
-                        // Check 4 sides: top (hLines[r][c]), bottom (hLines[r+1][c]), left (vLines[r][c]), right (vLines[r][c+1])
                         if (hLines[r][c] !== 0 && hLines[r+1][c] !== 0 && vLines[r][c] !== 0 && vLines[r][c+1] !== 0) {
                             boxes[r][c] = turn + 1;
                             scores[turn]++;
@@ -347,7 +339,7 @@
             const p2Status = document.getElementById('p2-status');
 
             if (turn === 0) {
-                p1Card.className = "p4 rounded-xl border-2 border-blue-500 bg-slate-800/90 shadow-md flex flex-col items-center transition-all scale-105";
+                p1Card.className = "p-4 rounded-xl border-2 border-blue-500 bg-slate-800/90 shadow-md flex flex-col items-center transition-all scale-105";
                 p2Card.className = "p-4 rounded-xl border-2 border-transparent bg-slate-800/40 shadow-md flex flex-col items-center transition-all opacity-70";
                 p1Status.className = "text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 opacity-100";
                 p2Status.className = "text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded opacity-0";
